@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Панель управления фитолампой</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav class="navbar bg-light">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Панель управления фитолампой</span>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="led_switch();"
+          id="led_switch"
+        >
+          Off
+        </button>
+      </div>
+    </nav>
+
+    <br />
+
+    <div class="container">
+      <div class="row">
+        <div class="col">Текущее время досветки, часы:</div>
+        <div class="col">
+          <span id="current_time"></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Время досвета, часы"
+            aria-label="default input example"
+            id="time"
+          />
+        </div>
+        <div class="col">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="set_light_time();"
+            id="time_btn"
+          >
+            Задать
+          </button>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col">Текущий город:</div>
+        <div class="col">
+          <span id="current_city"></span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Ваш город"
+            aria-label="default input example"
+            id="city"
+          />
+        </div>
+        <div class="col">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="set_city();"
+            id="city_btn"
+          >
+            Задать
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Lux</th>
+          <th scope="col">Time</th>
+        </tr>
+      </thead>
+      <tbody id="db">
+        <tr>
+          <td>
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </td>
+          <td>
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script type="text/javascript">
+      async function get_time() {
+        elemt = document.getElementById("current_time");
+        let response = await fetch("http://localhost:9080/get_time");
+        let data = await response.text();
+        elemt.innerHTML = data;
+      }
+
+      async function get_city() {
+        elemc = document.getElementById("current_city");
+        let response = await fetch("http://localhost:9080/get_city");
+        let data = await response.text();
+        elemc.innerHTML = data;
+      }
+
+      async function fetchDB() {
+        elem = document.getElementById("db");
+        let response = await fetch("http://localhost:9080/db");
+        let data = await response.text();
+        let elements = data.split(/\r?\n/);
+        elem.innerHTML = "";
+        for (var i = 0; i < elements.length - 1; i++) {
+          row_elements = elements[i].split(":");
+          elem.innerHTML +=
+            `<tr>
+          <td>` +
+            row_elements[0] +
+            `</td>
+          <td>` +
+            row_elements[1] +
+            `</td>
+        </tr>`;
+        }
+      }
+
+      get_time();
+      get_city();
+      fetchDB();
+
+      function led_switch() {
+        elem = document.getElementById("led_switch");
+        if (elem.innerHTML == "On") {
+          fetch("http://localhost:9080/on");
+          elem.innerHTML = "Off";
+        } else {
+          elem.innerHTML = "On";
+          fetch("http://localhost:9080/off");
+        }
+      }
+
+      function set_light_time() {
+        elem = document.getElementById("time");
+        elem1 = document.getElementById("current_time");
+        fetch("http://localhost:9080/set_light_time", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ time: parseInt(elem.value) })
+        });
+        elem1.innerHTML = elem.value;
+      }
+
+      function set_city() {
+        elem = document.getElementById("city");
+        elem1 = document.getElementById("current_city");
+
+        fetch("http://localhost:9080/set_city", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ city: elem.value })
+        });
+        elem1.innerHTML = elem.value;
+      }
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

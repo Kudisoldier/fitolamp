@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "author": "Efim",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 78.84, "left": 45.55, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 72.04,
+      "left": -61.08,
+      "rotate": 180,
+      "attrs": { "color": "purple", "flip": "" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 70.9,
+      "left": 223.31,
+      "rotate": 90,
+      "attrs": {}
+    },
+    { "type": "wokwi-microsd-card", "id": "sd1", "top": 189.57, "left": -93.79, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "ldr1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "ldr1:GND", "esp:GND.1", "black", [ "v38.97", "h-1.52" ] ],
+    [ "ldr1:AO", "esp:D32", "green", [ "v2.18", "h-110.79", "v-134.03", "h-145.41", "v93.73" ] ],
+    [ "sd1:VCC", "esp:VIN", "red", [ "h0" ] ],
+    [ "sd1:GND", "esp:GND.2", "black", [ "h57.37", "v10.58" ] ],
+    [ "sd1:SCK", "esp:D14", "green", [ "h52.37", "v-29.15" ] ],
+    [ "sd1:DO", "esp:D12", "green", [ "h0" ] ],
+    [ "sd1:DI", "esp:D13", "green", [ "h57.37", "v-30.3" ] ],
+    [ "sd1:CS", "esp:D15", "green", [ "h54.87", "v30.29", "h126.32", "v-68.16" ] ],
+    [ "led1:A", "esp:D21", "green", [ "v-65.76", "h299.52", "v130.15" ] ],
+    [ "led1:C", "esp:GND.1", "green", [ "v-53.41", "h281.07", "v227.05" ] ]
+  ]
+}
